@@ -97,7 +97,7 @@ void StickWidget::keyReleaseEvent(QKeyEvent* event)
 {
   // ESS Positions -- TODO (set as configurable hotkeys?)
   bool changed = false;
-  if (event->modifiers() == Qt::ShiftModifier)  // Require Left Alt
+  if (event->modifiers() == Qt::ShiftModifier)  // Require Shift
   {
     switch (event->key())
     {
