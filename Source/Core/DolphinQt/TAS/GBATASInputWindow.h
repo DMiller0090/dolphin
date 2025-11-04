@@ -36,4 +36,9 @@ private:
   TASCheckBox* m_up_button;
   TASCheckBox* m_down_button;
   TASCheckBox* m_right_button;
+
+  QCheckBox* m_disconnect_checkbox = nullptr;
+private slots:
+  void OnDisconnectToggled(bool checked);
+
 };

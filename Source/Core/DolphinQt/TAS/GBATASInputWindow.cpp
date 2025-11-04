@@ -67,21 +67,40 @@ GBATASInputWindow::GBATASInputWindow(QWidget* parent, int controller_id)
   QGroupBox* buttons_box = new QGroupBox(tr("Buttons"));
   buttons_box->setLayout(buttons_layout);
 
+  m_disconnect_checkbox = new QCheckBox(tr("Disconnect link cable"));
+  m_disconnect_checkbox->setToolTip(
+      tr("While checked, the GBA link cable is force-disconnected for this port "
+         "(records via the Y button bit)."));
+  connect(m_disconnect_checkbox, &QCheckBox::toggled, this,
+          &GBATASInputWindow::OnDisconnectToggled);
+
+  // Ensure m_settings_box has a layout and add the checkbox there
+  if (!m_settings_box->layout())
+    m_settings_box->setLayout(new QVBoxLayout);
+  m_settings_box->layout()->addWidget(m_disconnect_checkbox);
+
   auto* layout = new QVBoxLayout;
   layout->addWidget(buttons_box);
   layout->addWidget(m_settings_box);
 
   setLayout(layout);
 }
-
-void GBATASInputWindow::hideEvent(QHideEvent* event)
+void GBATASInputWindow::OnDisconnectToggled(bool checked)
 {
-  Pad::GetGBAConfig()->GetController(m_controller_id)->ClearInputOverrideFunction();
+  Pad::SetGBAForceDisconnect(m_controller_id, checked);
 }
-
 void GBATASInputWindow::showEvent(QShowEvent* event)
 {
   Pad::GetGBAConfig()
       ->GetController(m_controller_id)
       ->SetInputOverrideFunction(m_overrider.GetInputOverrideFunction());
+
+  m_disconnect_checkbox->setChecked(Pad::GetGBAForceDisconnect(m_controller_id));
+
+  TASInputWindow::showEvent(event);
 }
+void GBATASInputWindow::hideEvent(QHideEvent* event)
+{
+  Pad::GetGBAConfig()->GetController(m_controller_id)->ClearInputOverrideFunction();
+}
+

@@ -146,6 +146,10 @@ bool CSIDevice_GBAEmu::GetData(u32& hi, u32& low)
   if (pad_status.button & PadButton::PAD_BUTTON_X)
     m_core->Reset();
 
+  // Y held = force disconnect; released = reconnect
+  const bool y_down = (pad_status.button & PadButton::PAD_BUTTON_Y) != 0;
+  m_core->SetForceDisconnect(y_down);
+
   return false;
 }
 

@@ -24,5 +24,9 @@ InputConfig* GetGBAConfig();
 GCPadStatus GetGBAStatus(int pad_num);
 void SetGBAReset(int pad_num, bool reset);
 
+// NEW: Force-disconnect override (drives the GC Y button bit for recording/playback)
+void SetGBAForceDisconnect(int pad_num, bool force_disconnect);
+bool GetGBAForceDisconnect(int pad_num);
+
 ControllerEmu::ControlGroup* GetGBAGroup(int pad_num, GBAPadGroup group);
 }  // namespace Pad

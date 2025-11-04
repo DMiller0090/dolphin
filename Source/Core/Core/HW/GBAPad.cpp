@@ -11,6 +11,7 @@
 namespace Pad
 {
 static InputConfig s_config("GBA", _trans("Pad"), "GBA");
+
 InputConfig* GetGBAConfig()
 {
   return &s_config;
@@ -19,7 +20,6 @@ InputConfig* GetGBAConfig()
 void ShutdownGBA()
 {
   s_config.UnregisterHotplugCallback();
-
   s_config.ClearControllers();
 }
 
@@ -55,6 +55,17 @@ GCPadStatus GetGBAStatus(int pad_num)
 void SetGBAReset(int pad_num, bool reset)
 {
   static_cast<GBAPad*>(s_config.GetController(pad_num))->SetReset(reset);
+}
+
+void SetGBAForceDisconnect(int pad_num, bool force_disconnect)
+{
+  static_cast<GBAPad*>(s_config.GetController(pad_num))
+      ->SetForceDisconnectOverride(force_disconnect);
+}
+
+bool GetGBAForceDisconnect(int pad_num)
+{
+  return static_cast<GBAPad*>(s_config.GetController(pad_num))->GetForceDisconnectOverride();
 }
 
 ControllerEmu::ControlGroup* GetGBAGroup(int pad_num, GBAPadGroup group)

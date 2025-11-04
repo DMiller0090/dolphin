@@ -72,7 +72,21 @@ GCPadStatus GBAPad::GetInput()
     pad.button |= PAD_BUTTON_X;
   m_reset_pending = false;
 
+  // Force-disconnect signal: hold Y when override is enabled
+  if (m_force_disconnect_override)
+    pad.button |= PAD_BUTTON_Y;
+
   return pad;
+}
+void GBAPad::SetForceDisconnectOverride(bool enabled)
+{
+  const auto lock = GetStateLock();  // use same pattern you use in SetReset, if present
+  m_force_disconnect_override = enabled;
+}
+
+bool GBAPad::GetForceDisconnectOverride() const
+{
+  return m_force_disconnect_override;
 }
 
 void GBAPad::SetReset(bool reset)
