@@ -315,9 +315,10 @@ void OnScreenUI::DrawDebugText()
         {
           ImGui::TextColored(cyan, "Frame: %" PRIu64 " / %" PRIu64, Movie::GetCurrentFrame(),
                              Movie::GetTotalFrames());
+          ImGui::TextColored(cyan, "Input: %" PRIu64 " / %" PRIu64, Movie::GetCurrentInputCount(),
+                             Movie::GetTotalInputCount());
         }
-        ImGui::TextColored(cyan, "Input: %" PRIu64 " / %" PRIu64, Movie::GetCurrentInputCount(),
-                           Movie::GetTotalInputCount());
+
       }
       else if (Config::Get(Config::MAIN_SHOW_FRAME_COUNT))
       {
