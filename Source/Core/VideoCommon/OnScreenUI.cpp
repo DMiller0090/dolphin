@@ -283,39 +283,58 @@ void OnScreenUI::DrawDebugText()
 {
   const bool show_movie_window =
       Config::Get(Config::MAIN_SHOW_FRAME_COUNT) || Config::Get(Config::MAIN_SHOW_LAG) ||
-      Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY) ||
+      Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY) || Config::Get(Config::MAIN_MOVIE_SHOW_INFO_DISPLAY) ||
       Config::Get(Config::MAIN_MOVIE_SHOW_RTC) || Config::Get(Config::MAIN_MOVIE_SHOW_RERECORD);
   if (show_movie_window)
   {
-    // Position under the FPS display.
-    ImGui::SetNextWindowPos(
-        ImVec2(ImGui::GetIO().DisplaySize.x - 10.f * m_backbuffer_scale, 80.f * m_backbuffer_scale),
-        ImGuiCond_FirstUseEver, ImVec2(1.0f, 0.0f));
+    const float margin = 10.f * m_backbuffer_scale;
+    ImGui::SetNextWindowPos(ImVec2(margin, margin), ImGuiCond_Always, ImVec2(0.0f, 0.0f));
     ImGui::SetNextWindowSizeConstraints(
         ImVec2(150.0f * m_backbuffer_scale, 20.0f * m_backbuffer_scale),
         ImGui::GetIO().DisplaySize);
-    if (ImGui::Begin("Movie", nullptr, ImGuiWindowFlags_NoFocusOnAppearing))
+
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoBackground;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+    window_flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+    ImVec4 cyan = ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+    if (ImGui::Begin("Movie", nullptr, window_flags))
     {
+      if (Movie::IsRecordingInput())
+      {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "RECORDING");
+      }
+      else if (Movie::IsPlayingInput())
+      {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "PLAYBACK");
+      }
       if (Movie::IsPlayingInput())
       {
-        ImGui::Text("Frame: %" PRIu64 " / %" PRIu64, Movie::GetCurrentFrame(),
-                    Movie::GetTotalFrames());
-        ImGui::Text("Input: %" PRIu64 " / %" PRIu64, Movie::GetCurrentInputCount(),
-                    Movie::GetTotalInputCount());
+        if (Config::Get(Config::MAIN_SHOW_FRAME_COUNT))
+        {
+          ImGui::TextColored(cyan, "Frame: %" PRIu64 " / %" PRIu64, Movie::GetCurrentFrame(),
+                             Movie::GetTotalFrames());
+        }
+        ImGui::TextColored(cyan, "Input: %" PRIu64 " / %" PRIu64, Movie::GetCurrentInputCount(),
+                           Movie::GetTotalInputCount());
       }
       else if (Config::Get(Config::MAIN_SHOW_FRAME_COUNT))
       {
-        ImGui::Text("Frame: %" PRIu64, Movie::GetCurrentFrame());
-        ImGui::Text("Input: %" PRIu64, Movie::GetCurrentInputCount());
+        ImGui::TextColored(cyan, "Frame: %" PRIu64, Movie::GetCurrentFrame());
+        ImGui::TextColored(cyan, "Input: %" PRIu64, Movie::GetCurrentInputCount());
       }
+
       if (Config::Get(Config::MAIN_SHOW_LAG))
-        ImGui::Text("Lag: %" PRIu64 "\n", Movie::GetCurrentLagCount());
+        ImGui::TextColored(cyan, "Lag: %" PRIu64 "\n", Movie::GetCurrentLagCount());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY))
-        ImGui::TextUnformatted(Movie::GetInputDisplay().c_str());
+        ImGui::TextColored(cyan, Movie::GetInputDisplay().c_str());
+      if (Config::Get(Config::MAIN_MOVIE_SHOW_INFO_DISPLAY))
+        ImGui::TextColored(cyan, Movie::GetInfoDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RTC))
-        ImGui::TextUnformatted(Movie::GetRTCDisplay().c_str());
+        ImGui::TextColored(cyan, Movie::GetRTCDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RERECORD))
-        ImGui::TextUnformatted(Movie::GetRerecords().c_str());
+        ImGui::TextColored(cyan, Movie::GetRerecords().c_str());
     }
     ImGui::End();
   }

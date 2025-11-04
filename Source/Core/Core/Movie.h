@@ -198,6 +198,7 @@ void CheckWiimoteStatus(int wiimote, const WiimoteCommon::DataReportBuilder& rpt
                         const WiimoteEmu::EncryptionKey& key);
 
 std::string GetInputDisplay();
+std::string GetInfoDisplay();
 std::string GetRTCDisplay();
 std::string GetRerecords();
 

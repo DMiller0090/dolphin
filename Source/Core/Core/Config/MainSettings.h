@@ -321,6 +321,7 @@ extern const Info<std::string> MAIN_MOVIE_MOVIE_AUTHOR;
 extern const Info<bool> MAIN_MOVIE_DUMP_FRAMES;
 extern const Info<bool> MAIN_MOVIE_DUMP_FRAMES_SILENT;
 extern const Info<bool> MAIN_MOVIE_SHOW_INPUT_DISPLAY;
+extern const Info<bool> MAIN_MOVIE_SHOW_INFO_DISPLAY;
 extern const Info<bool> MAIN_MOVIE_SHOW_RTC;
 extern const Info<bool> MAIN_MOVIE_SHOW_RERECORD;
 

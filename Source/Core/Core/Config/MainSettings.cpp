@@ -478,6 +478,7 @@ const Info<std::string> MAIN_MOVIE_MOVIE_AUTHOR{{System::Main, "Movie", "Author"
 const Info<bool> MAIN_MOVIE_DUMP_FRAMES{{System::Main, "Movie", "DumpFrames"}, false};
 const Info<bool> MAIN_MOVIE_DUMP_FRAMES_SILENT{{System::Main, "Movie", "DumpFramesSilent"}, false};
 const Info<bool> MAIN_MOVIE_SHOW_INPUT_DISPLAY{{System::Main, "Movie", "ShowInputDisplay"}, false};
+const Info<bool> MAIN_MOVIE_SHOW_INFO_DISPLAY{{System::Main, "Movie", "ShowInfoDisplay"}, false};
 const Info<bool> MAIN_MOVIE_SHOW_RTC{{System::Main, "Movie", "ShowRTC"}, false};
 const Info<bool> MAIN_MOVIE_SHOW_RERECORD{{System::Main, "Movie", "ShowRerecord"}, false};
 

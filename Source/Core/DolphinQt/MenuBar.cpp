@@ -797,6 +797,13 @@ void MenuBar::AddMovieMenu()
     Config::SetBaseOrCurrent(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY, value);
   });
 
+  auto* info_display = movie_menu->addAction(tr("Show Info Display"));
+  info_display->setCheckable(true);
+  info_display->setChecked(Config::Get(Config::MAIN_MOVIE_SHOW_INFO_DISPLAY));
+  connect(info_display, &QAction::toggled, [](bool value) {
+    Config::SetBaseOrCurrent(Config::MAIN_MOVIE_SHOW_INFO_DISPLAY, value);
+  });
+
   auto* system_clock = movie_menu->addAction(tr("Show System Clock"));
   system_clock->setCheckable(true);
   system_clock->setChecked(Config::Get(Config::MAIN_MOVIE_SHOW_RTC));
