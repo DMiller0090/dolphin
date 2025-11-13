@@ -76,7 +76,7 @@ class _SaveStateCallback(Protocol):
             Should be disregarded if is_slot is false
         """
 
-
+"""This is disabled to prevent hanging"""
 def on_savestatesave(callback: _SaveStateCallback | None) -> None:
     """
     Registers a callback to be called every time a savestate is saved.
@@ -89,7 +89,7 @@ def on_savestatesave(callback: _SaveStateCallback | None) -> None:
 async def savestatesave() -> tuple[bool, int]:
     """Awaitable event that completes once a savestate is saved."""
 
-
+"""This is disabled to prevent hanging"""
 def on_savestateload(callback: _SaveStateCallback | None) -> None:
     """
     Registers a callback to be called every time a savestate is loaded.
