@@ -834,6 +834,8 @@ static void RebuildUserDirectories(unsigned int dir_index)
   switch (dir_index)
   {
   case D_USER_IDX:
+    s_user_paths[F_INFODISPLAY_IDX] = s_user_paths[D_USER_IDX] + INFODISPLAY_DIR DIR_SEP;
+
     s_user_paths[D_GCUSER_IDX] = s_user_paths[D_USER_IDX] + GC_USER_DIR DIR_SEP;
     s_user_paths[D_WIIROOT_IDX] = s_user_paths[D_USER_IDX] + WII_USER_DIR DIR_SEP;
     s_user_paths[D_CONFIG_IDX] = s_user_paths[D_USER_IDX] + CONFIG_DIR DIR_SEP;
