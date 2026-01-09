@@ -329,13 +329,13 @@ void OnScreenUI::DrawDebugText()
       if (Config::Get(Config::MAIN_SHOW_LAG))
         ImGui::TextColored(cyan, "Lag: %" PRIu64 "\n", Movie::GetCurrentLagCount());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_INPUT_DISPLAY))
-        ImGui::TextColored(cyan, Movie::GetInputDisplay().c_str());
+        ImGui::TextColored(cyan, "%s", Movie::GetInputDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_INFO_DISPLAY))
-        ImGui::TextColored(cyan, Movie::GetInfoDisplay().c_str());
+        ImGui::TextColored(cyan, "%s", Movie::GetInfoDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RTC))
-        ImGui::TextColored(cyan, Movie::GetRTCDisplay().c_str());
+        ImGui::TextColored(cyan, "%s", Movie::GetRTCDisplay().c_str());
       if (Config::Get(Config::MAIN_MOVIE_SHOW_RERECORD))
-        ImGui::TextColored(cyan, Movie::GetRerecords().c_str());
+        ImGui::TextColored(cyan, "%s", Movie::GetRerecords().c_str());
     }
     ImGui::End();
   }
