@@ -378,6 +378,16 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   find_library(IOB_LIBRARY IOBluetooth)
   find_library(IOK_LIBRARY IOKit)
   find_library(OPENGL_LIBRARY OpenGL)
+
+	find_package(Python 3.14.2 COMPONENTS Interpreter REQUIRED)
+	message(STATUS "Found Python version: ${Python_VERSION}")
+
+  # Check if the found Python version is greater than or equal to 3.12
+	if(${Python_VERSION} VERSION_LESS "3.14.2")
+		message(FATAL_ERROR "Python version is older than 3.14.2")
+	else()
+		message(STATUS "Python version is ${Python_VERSION}")
+	endif()
 endif()
 
 if(ENABLE_LTO)
