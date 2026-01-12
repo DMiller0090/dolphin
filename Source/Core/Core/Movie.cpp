@@ -201,6 +201,9 @@ std::string GetInputDisplay()
 }
 std::string GetInfoDisplay()
 {
+  static std::string s_info_display_location = "";
+  static std::string s_previousContent = "";
+  static bool s_previousSuccess = false;
   std::string input_display;
   {
     // Dragonbane
@@ -208,12 +211,30 @@ std::string GetInfoDisplay()
     Memory::MemoryManager& memory = system.GetMemory();
     std::string gameID = SConfig::GetInstance().m_debugger_game_id;
     std::string iniContent;
+    bool logChange = false;
 
-    bool success = File::ReadFileToString(
-        File::GetExeDirectory() + "\\InfoDisplay\\" + gameID + ".ini", iniContent);
+#if __APPLE__
+    std::string iniPath = File::GetUserPath(F_INFODISPLAY_IDX) + gameID + ".ini";
+#else
+    std::string iniPath = File::GetExeDirectory()+ "\\InfoDisplay\\" + gameID + ".ini";
+#endif
+    bool success = File::ReadFileToString(iniPath, iniContent);
+    if (
+      iniPath != s_info_display_location
+      || s_previousSuccess != success
+      || iniContent != s_previousContent
+    ) {
+      s_info_display_location = iniPath;
+      s_previousSuccess = success;
+      s_previousContent = iniContent;
+      logChange = true;
+    }
 
     if (success)
     {
+      if (logChange) {
+        NOTICE_LOG_FMT(CORE, "Loaded InfoDisplay from: {}", iniPath);
+      }
       int lineCounter = 0;
       bool inProgress = true;
       input_display.append("\n");
@@ -440,6 +461,10 @@ std::string GetInfoDisplay()
         }
 
         input_display.append("\n");
+      }
+    } else {
+      if (logChange) {
+        NOTICE_LOG_FMT(CORE, "Unable to load InfoDisplay file from: {}", iniPath);
       }
     }
   }

@@ -88,7 +88,8 @@ DEFAULT_CONFIG = {
 # 2) Single architecture builds should utilize the normal generated cmake
 #    project files rather than this wrapper script
 
-ARCHITECTURES = ["x86_64", "arm64"]
+# ARCHITECTURES = ["x86_64", "arm64"]
+ARCHITECTURES = ["arm64"]
 
 
 def parse_args(conf=DEFAULT_CONFIG):
@@ -324,7 +325,7 @@ def build(config):
                 + python_to_cmake_bool(config["steam"]),
                 "-DENABLE_AUTOUPDATE="
                 + python_to_cmake_bool(config["autoupdate"]),
-                '-DDISTRIBUTOR=' + config['distributor']
+                '-DDISTRIBUTOR=' + config['distributor'],
             ],
             env=env, cwd=arch)
 
@@ -343,9 +344,12 @@ def build(config):
 
     # Source binary trees to merge together
     src_app0 = ARCHITECTURES[0]+"/Binaries/"
-    src_app1 = ARCHITECTURES[1]+"/Binaries/"
+    if len(ARCHITECTURES) > 1:
+        src_app1 = ARCHITECTURES[1] + "/Binaries/"
+        recursive_merge_binaries(src_app0, src_app1, dst_app)
+    else:
+        dst_app = ARCHITECTURES[0] + "/Binaries/"
 
-    recursive_merge_binaries(src_app0, src_app1, dst_app)
     for path in glob.glob(dst_app+"/*"):
         if os.path.isdir(path) and os.path.splitext(path)[1] != ".app":
             continue

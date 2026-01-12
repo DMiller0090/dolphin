@@ -7,6 +7,7 @@
 #include "Common/FileUtil.h"
 #include "Core/Core.h"
 #include "Scripting/ScriptList.h"
+#include <QDirIterator>
 
 ScriptsFileSystemModel::ScriptsFileSystemModel(QObject* parent /* = nullptr */)
     : QFileSystemModel(parent)
