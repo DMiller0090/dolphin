@@ -30,6 +30,10 @@ class WiiTASInputWindow : public TASInputWindow
   Q_OBJECT
 public:
   explicit WiiTASInputWindow(QWidget* parent, int num);
+  ~WiiTASInputWindow();
+
+  static WiiTASInputWindow* GetInstanceForController(int controller_id);
+  void ApplyNunchukEssPreset(int preset_index);
 
   void hideEvent(QHideEvent* event) override;
   void showEvent(QShowEvent* event) override;
