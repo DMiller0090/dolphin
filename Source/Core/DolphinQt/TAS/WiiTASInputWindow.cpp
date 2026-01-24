@@ -42,6 +42,34 @@
 
 using namespace WiimoteCommon;
 
+namespace
+{
+struct NunchukStickPreset
+{
+  int x;
+  int y;
+};
+
+// ESS Positions
+// Order: Q, W, E, A, S, D, Z, X, C in grid layout.
+constexpr NunchukStickPreset s_nunchuk_stick_presets[] = {
+    {111, 145},  // Q - up left
+    {128, 146},  // W - up
+    {145, 145},  // E - up-right
+    {110, 128},  // A - left
+    {128, 128},  // S - center
+    {146, 128},  // D - right
+    {111, 111},  // Z - down-left
+    {128, 110},  // X - down
+    {145, 111},  // C - down-right
+};
+
+WiiTASInputWindow* s_wii_tas_windows[4] = {nullptr, nullptr, nullptr, nullptr};
+}  // namespace
+
+  if (m_num >= 0 && m_num < 4)
+    s_wii_tas_windows[m_num] = this;
+
 WiiTASInputWindow::WiiTASInputWindow(QWidget* parent, int num) : TASInputWindow(parent), m_num(num)
 {
   const QKeySequence ir_x_shortcut_key_sequence = QKeySequence(Qt::ALT | Qt::Key_X);
@@ -382,6 +410,40 @@ WiiTASInputWindow::WiiTASInputWindow(QWidget* parent, int num) : TASInputWindow(
   }
   UpdateExt();
 }
+
+WiiTASInputWindow::~WiiTASInputWindow()
+{
+  if (m_num >= 0 && m_num < 4 && s_wii_tas_windows[m_num] == this)
+    s_wii_tas_windows[m_num] = nullptr;
+}
+
+WiiTASInputWindow* WiiTASInputWindow::GetInstanceForController(int controller_id)
+{
+  if (controller_id < 0 || controller_id >= 4)
+    return nullptr;
+  return s_wii_tas_windows[controller_id];
+}
+
+void WiiTASInputWindow::ApplyNunchukEssPreset(int preset_index)
+{
+  if (m_active_extension != WiimoteEmu::ExtensionNumber::NUNCHUK || !m_nunchuk_stick_box)
+    return;
+
+  if (preset_index < 0 || preset_index >= static_cast<int>(sizeof(s_nunchuk_stick_presets) /
+                                                           sizeof(s_nunchuk_stick_presets[0])))
+  {
+    return;
+  }
+
+  StickWidget* stick_widget = m_nunchuk_stick_box->GetStickWidget();
+  if (!stick_widget)
+    return;
+
+  const NunchukStickPreset& preset = s_nunchuk_stick_presets[preset_index];
+  stick_widget->SetX(preset.x);
+  stick_widget->SetY(preset.y);
+}
+
 
 WiimoteEmu::Wiimote* WiiTASInputWindow::GetWiimote()
 {
