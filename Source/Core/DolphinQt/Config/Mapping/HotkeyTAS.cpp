@@ -25,6 +25,8 @@ void HotkeyTAS::CreateMainLayout()
   // TAS Main Stick ESS group (9 ESS hotkeys)
   m_main_layout->addWidget(CreateGroupBox(
       tr("Main Stick ESS"), HotkeyManagerEmu::GetHotkeyGroup(HKGP_TAS_MAIN_STICK_ESS)));
+  m_main_layout->addWidget(CreateGroupBox(
+      tr("Nunchuk Stick ESS"), HotkeyManagerEmu::GetHotkeyGroup(HKGP_TAS_NUNCHUK_STICK_ESS)));
   setLayout(m_main_layout);
 }
 
