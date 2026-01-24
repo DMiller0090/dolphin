@@ -1,7 +1,7 @@
 #include <string>
 
 #include "imgui.h"
-#include "API/Gui.h"  // adjust if your header path differs
+#include "Core/API/Gui.h"  // adjust if your header path differs
 
 namespace API::Gui
 {
