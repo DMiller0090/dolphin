@@ -382,6 +382,7 @@ constexpr std::array<HotkeyGroupInfo, NUM_HOTKEY_GROUPS> s_groups_info = {
      {_trans("GBA Window Size"), HK_GBA_1X, HK_GBA_4X, true},
      {_trans("USB Emulation Devices"), HK_SKYLANDERS_PORTAL, HK_INFINITY_BASE},
      {_trans("TAS Main Stick ESS"), HK_TAS_MAIN_STICK_ESS_UP_LEFT, HK_TAS_MAIN_STICK_ESS_DOWN_RIGHT},
+     {_trans("TAS Nunchuk Stick ESS"), HK_TAS_NUNCHUK_STICK_ESS_UP_LEFT, HK_TAS_NUNCHUK_STICK_ESS_DOWN_RIGHT},
 }};
 
 HotkeyManager::HotkeyManager()
