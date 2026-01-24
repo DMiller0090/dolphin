@@ -688,28 +688,52 @@ void HotkeyScheduler::CheckTasEssHotkeys()
 {
   // We’re targeting controller 1 (index 0)
   GCTASInputWindow* tas = GCTASInputWindow::GetInstanceForController(0);
-  if (!tas)
+  if (tas)
+  {
+    auto queue_preset = [tas](Hotkey hk, int preset_index) {
+      if (IsHotkey(hk))
+      {
+        // Run ApplyEssPreset on the GUI thread, like CheckGBAHotkeys does
+      QueueOnObject(wii_tas, [wii_tas, preset_index] {
+        if (wii_tas)
+          wii_tas->ApplyNunchukEssPreset(preset_index);
+        });
+      }
+    };
+
+    queue_preset(HK_TAS_MAIN_STICK_ESS_UP_LEFT, 0);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_UP, 1);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_UP_RIGHT, 2);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_LEFT, 3);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_CENTER, 4);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_RIGHT, 5);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN_LEFT, 6);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN, 7);
+    queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN_RIGHT, 8);
+  }
+
+  WiiTASInputWindow* wii_tas = WiiTASInputWindow::GetInstanceForController(0);
+  if (!wii_tas)
     return;
 
-  auto queue_preset = [tas](Hotkey hk, int preset_index) {
+  auto queue_nunchuk_preset = [wii_tas](Hotkey hk, int preset_index) {
     if (IsHotkey(hk))
     {
       // Run ApplyEssPreset on the GUI thread, like CheckGBAHotkeys does
-      QueueOnObject(tas, [tas, preset_index] {
-        // tas might have been closed between queuing and execution
-        if (tas)
-          tas->ApplyEssPreset(preset_index);
+      QueueOnObject(wii_tas, [wii_tas, preset_index] {
+        if (wii_tas)
+          wii_tas->ApplyNunchukEssPreset(preset_index);
       });
     }
   };
 
-  queue_preset(HK_TAS_MAIN_STICK_ESS_UP_LEFT, 0);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_UP, 1);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_UP_RIGHT, 2);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_LEFT, 3);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_CENTER, 4);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_RIGHT, 5);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN_LEFT, 6);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN, 7);
-  queue_preset(HK_TAS_MAIN_STICK_ESS_DOWN_RIGHT, 8);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_UP_LEFT, 0);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_UP, 1);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_UP_RIGHT, 2);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_LEFT, 3);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_CENTER, 4);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_RIGHT, 5);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_DOWN_LEFT, 6);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_DOWN, 7);
+  queue_nunchuk_preset(HK_TAS_NUNCHUK_STICK_ESS_DOWN_RIGHT, 8);
 }
