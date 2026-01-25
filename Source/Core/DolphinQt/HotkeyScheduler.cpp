@@ -694,9 +694,9 @@ void HotkeyScheduler::CheckTasEssHotkeys()
       if (IsHotkey(hk))
       {
         // Run ApplyEssPreset on the GUI thread, like CheckGBAHotkeys does
-      QueueOnObject(wii_tas, [wii_tas, preset_index] {
-        if (wii_tas)
-          wii_tas->ApplyNunchukEssPreset(preset_index);
+        QueueOnObject(tas, [tas, preset_index] {
+          if (tas)
+            tas->ApplyEssPreset(preset_index);
         });
       }
     };

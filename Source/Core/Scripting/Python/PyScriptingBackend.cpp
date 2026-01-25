@@ -64,15 +64,40 @@ static PyThreadState* InitMainPythonInterpreter()
     ERROR_LOG_FMT(SCRIPTING, "failed to add dolphin to builtins");
 
 #ifdef _WIN32
-  Py_SetPythonHome(const_cast<wchar_t*>(python_home.c_str()));
-  Py_SetPath(python_path.c_str());
 #endif
   INFO_LOG_FMT(SCRIPTING, "Initializing embedded python... {}", Py_GetVersion());
   std::string scriptPath = File::GetUserPath(D_SCRIPTS_IDX);
   PyConfig config;
   PyConfig_InitPythonConfig(&config);
 
-  PyConfig_SetString(&config, &config.pythonpath_env, std::wstring(scriptPath.begin(), scriptPath.end()).c_str());
+  auto AppendSearchPath = [&](const std::wstring& path) {
+    if (path.empty())
+      return;
+    PyStatus status = PyWideStringList_Append(&config.module_search_paths, path.c_str());
+    if (PyStatus_Exception(status))
+    {
+      PyConfig_Clear(&config);
+      Py_ExitStatusException(status);
+    }
+  };
+
+#ifdef _WIN32
+  PyConfig_SetString(&config, &config.home, python_home.c_str());
+  config.module_search_paths_set = 1;
+  size_t start = 0;
+  while (start <= python_path.size())
+  {
+    const size_t end = python_path.find(L';', start);
+    const std::wstring part =
+        (end == std::wstring::npos) ? python_path.substr(start) : python_path.substr(start, end - start);
+    AppendSearchPath(part);
+    if (end == std::wstring::npos)
+      break;
+    start = end + 1;
+  }
+#endif
+
+  AppendSearchPath(UTF8ToWString(scriptPath));
   
   Py_InitializeFromConfig(&config);
 
