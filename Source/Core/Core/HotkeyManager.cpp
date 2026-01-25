@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -208,9 +210,25 @@ constexpr std::array<const char*, NUM_HOTKEYS> s_hotkey_labels{{
     _trans("TAS Main Stick ESS Down-Left"),
     _trans("TAS Main Stick ESS Down"),
     _trans("TAS Main Stick ESS Down-Right"),
+
+    // TAS Nunchuk Stick ESS hotkeys
+    _trans("TAS Nunchuk Stick ESS Up-Left"),
+    _trans("TAS Nunchuk Stick ESS Up"),
+    _trans("TAS Nunchuk Stick ESS Up-Right"),
+    _trans("TAS Nunchuk Stick ESS Left"),
+    _trans("TAS Nunchuk Stick ESS Center"),
+    _trans("TAS Nunchuk Stick ESS Right"),
+    _trans("TAS Nunchuk Stick ESS Down-Left"),
+    _trans("TAS Nunchuk Stick ESS Down"),
+    _trans("TAS Nunchuk Stick ESS Down-Right"),
 }};
 // clang-format on
 static_assert(NUM_HOTKEYS == s_hotkey_labels.size(), "Wrong count of hotkey_labels");
+
+static bool TraceHotkeyCtor()
+{
+  return std::getenv("DOLPHIN_TRACE_HOTKEY_CTOR") != nullptr;
+}
 
 namespace HotkeyManagerEmu
 {
@@ -311,23 +329,61 @@ static void LoadLegacyConfig(ControllerEmu::EmulatedController* controller)
 
 void Initialize()
 {
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize start\n");
+  fflush(stderr);
+#endif
   if (s_config.ControllersNeedToBeCreated())
+  {
+#ifdef _WIN32
+    fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize CreateController\n");
+    fflush(stderr);
+#endif
     s_config.CreateController<HotkeyManager>();
+  }
 
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize RegisterHotplugCallback\n");
+  fflush(stderr);
+#endif
   s_config.RegisterHotplugCallback();
 
   // load the saved controller config
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize before LoadConfig\n");
+  fflush(stderr);
+#endif
   LoadConfig();
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize after LoadConfig\n");
+  fflush(stderr);
+#endif
 
   s_hotkey_down = {};
 
   s_enabled = true;
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::Initialize end\n");
+  fflush(stderr);
+#endif
 }
 
 void LoadConfig()
 {
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::LoadConfig start\n");
+  fflush(stderr);
+#endif
   s_config.LoadConfig(InputConfig::InputClass::GC);
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::LoadConfig after LoadConfig\n");
+  fflush(stderr);
+#endif
   LoadLegacyConfig(s_config.GetController(0));
+#ifdef _WIN32
+  fprintf(stderr, "[trace] HotkeyManagerEmu::LoadConfig end\n");
+  fflush(stderr);
+#endif
 }
 
 ControllerEmu::ControlGroup* GetHotkeyGroup(HotkeyGroup group)
@@ -387,15 +443,37 @@ constexpr std::array<HotkeyGroupInfo, NUM_HOTKEY_GROUPS> s_groups_info = {
 
 HotkeyManager::HotkeyManager()
 {
+  if (TraceHotkeyCtor())
+  {
+    fprintf(stderr, "[trace] HotkeyManager::HotkeyManager start\n");
+    fflush(stderr);
+  }
   for (std::size_t group = 0; group < m_hotkey_groups.size(); group++)
   {
+    if (TraceHotkeyCtor())
+    {
+      fprintf(stderr, "[trace] HotkeyManager ctor group %zu name=%s first=%d last=%d\n", group,
+              s_groups_info[group].name, s_groups_info[group].first, s_groups_info[group].last);
+      fflush(stderr);
+    }
     m_hotkey_groups[group] =
         (m_keys[group] = new ControllerEmu::Buttons(s_groups_info[group].name));
     groups.emplace_back(m_hotkey_groups[group]);
     for (int key = s_groups_info[group].first; key <= s_groups_info[group].last; key++)
     {
+      if (TraceHotkeyCtor())
+      {
+        fprintf(stderr, "[trace] HotkeyManager ctor add key=%d label=%s\n", key,
+                s_hotkey_labels[key]);
+        fflush(stderr);
+      }
       m_keys[group]->AddInput(ControllerEmu::Translatability::Translate, s_hotkey_labels[key]);
     }
+  }
+  if (TraceHotkeyCtor())
+  {
+    fprintf(stderr, "[trace] HotkeyManager::HotkeyManager end\n");
+    fflush(stderr);
   }
 }
 

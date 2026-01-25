@@ -67,11 +67,11 @@ constexpr NunchukStickPreset s_nunchuk_stick_presets[] = {
 WiiTASInputWindow* s_wii_tas_windows[4] = {nullptr, nullptr, nullptr, nullptr};
 }  // namespace
 
+WiiTASInputWindow::WiiTASInputWindow(QWidget* parent, int num) : TASInputWindow(parent), m_num(num)
+{
   if (m_num >= 0 && m_num < 4)
     s_wii_tas_windows[m_num] = this;
 
-WiiTASInputWindow::WiiTASInputWindow(QWidget* parent, int num) : TASInputWindow(parent), m_num(num)
-{
   const QKeySequence ir_x_shortcut_key_sequence = QKeySequence(Qt::ALT | Qt::Key_X);
   const QKeySequence ir_y_shortcut_key_sequence = QKeySequence(Qt::ALT | Qt::Key_C);
 

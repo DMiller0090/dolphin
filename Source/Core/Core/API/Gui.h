@@ -13,6 +13,10 @@
 
 using Vec2f = ImVec2;
 
+#ifdef DrawText
+#undef DrawText
+#endif
+
 namespace API
 {
 
