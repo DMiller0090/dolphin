@@ -64,8 +64,15 @@ static PyThreadState* InitMainPythonInterpreter()
     ERROR_LOG_FMT(SCRIPTING, "failed to add dolphin to builtins");
 
 #ifdef _WIN32
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
   Py_SetPythonHome(const_cast<wchar_t*>(python_home.c_str()));
   Py_SetPath(python_path.c_str());
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 #endif
   INFO_LOG_FMT(SCRIPTING, "Initializing embedded python... {}", Py_GetVersion());
   std::string scriptPath = File::GetUserPath(D_SCRIPTS_IDX);

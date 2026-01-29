@@ -54,6 +54,9 @@ public:
   static constexpr u64 FIXED_SAMPLE_RATE_DIVIDEND = 54000000 * 2;
 
 private:
+  void StartLogGBAAudio(int device_number);
+  void StopLogGBAAudio(int device_number);
+
   static constexpr u32 MAX_SAMPLES = 1024 * 4;  // 128 ms
   static constexpr u32 INDEX_MASK = MAX_SAMPLES * 2 - 1;
   static constexpr int MAX_FREQ_SHIFT = 200;  // Per 32000 Hz
@@ -113,13 +116,16 @@ private:
 
   WaveFileWriter m_wave_writer_dtk;
   WaveFileWriter m_wave_writer_dsp;
+  std::array<WaveFileWriter, 4> m_wave_writer_gba{};
 
   bool m_log_dtk_audio = false;
   bool m_log_dsp_audio = false;
+  std::array<bool, 4> m_log_gba_audio{};
 
   float m_config_emulation_speed;
   int m_config_timing_variance;
   bool m_config_audio_stretch;
+  bool m_config_gba_dump_audio = false;
 
   Config::ConfigChangedCallbackID m_config_changed_callback_id;
 };

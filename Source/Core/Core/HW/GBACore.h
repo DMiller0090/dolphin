@@ -80,6 +80,8 @@ private:
   void RunUntil(u64 gc_ticks);
   void RunFor(u64 gc_ticks);
   void Flush();
+  void MaybeDumpFrame();
+  std::string GetFrameDumpFileName(u32 index) const;
 
   struct Command
   {
@@ -115,6 +117,9 @@ private:
   SIODriver m_sio_driver{};
   AVStream m_stream{};
   std::vector<u32> m_video_buffer;
+  std::mutex m_frame_dump_mutex;
+  bool m_frame_dump_started = false;
+  u32 m_frame_dump_counter = 0;
 
   u64 m_last_gc_ticks = 0;
   u64 m_gc_ticks_remainder = 0;

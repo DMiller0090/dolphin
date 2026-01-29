@@ -363,6 +363,8 @@ const Info<std::string> MAIN_GBA_SAVES_PATH{{System::Main, "GBA", "SavesPath"}, 
 const Info<bool> MAIN_GBA_SAVES_IN_ROM_PATH{{System::Main, "GBA", "SavesInRomPath"}, false};
 const Info<bool> MAIN_GBA_THREADS{{System::Main, "GBA", "Threads"}, true};
 #endif
+const Info<bool> MAIN_GBA_DUMP_FRAMES{{System::Main, "GBA", "DumpFrames"}, false};
+const Info<bool> MAIN_GBA_DUMP_AUDIO{{System::Main, "GBA", "DumpAudio"}, false};
 
 // Main.Network
 

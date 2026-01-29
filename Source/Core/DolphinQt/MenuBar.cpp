@@ -823,6 +823,20 @@ void MenuBar::AddMovieMenu()
   dump_audio->setChecked(Config::Get(Config::MAIN_DUMP_AUDIO));
   connect(dump_audio, &QAction::toggled,
           [](bool value) { Config::SetBaseOrCurrent(Config::MAIN_DUMP_AUDIO, value); });
+
+#ifdef HAS_LIBMGBA
+  auto* dump_gba_frames = movie_menu->addAction(tr("Dump GBA Frames"));
+  dump_gba_frames->setCheckable(true);
+  dump_gba_frames->setChecked(Config::Get(Config::MAIN_GBA_DUMP_FRAMES));
+  connect(dump_gba_frames, &QAction::toggled,
+          [](bool value) { Config::SetBaseOrCurrent(Config::MAIN_GBA_DUMP_FRAMES, value); });
+
+  auto* dump_gba_audio = movie_menu->addAction(tr("Dump GBA Audio"));
+  dump_gba_audio->setCheckable(true);
+  dump_gba_audio->setChecked(Config::Get(Config::MAIN_GBA_DUMP_AUDIO));
+  connect(dump_gba_audio, &QAction::toggled,
+          [](bool value) { Config::SetBaseOrCurrent(Config::MAIN_GBA_DUMP_AUDIO, value); });
+#endif
 }
 
 void MenuBar::AddJITMenu()

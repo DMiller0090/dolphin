@@ -170,3 +170,55 @@ void WaveFileWriter::AddStereoSamplesBE(const short* sample_data, u32 count,
   file.WriteBytes(conv_buffer.data(), count * 4);
   audio_size += count * 4;
 }
+
+void WaveFileWriter::AddStereoSamplesLE(const short* sample_data, u32 count,
+                                        u32 sample_rate_divisor, int l_volume, int r_volume)
+{
+  if (!file)
+  {
+    ERROR_LOG_FMT(AUDIO, "WaveFileWriter - file not open.");
+    return;
+  }
+
+  if (count * 2 > BUFFER_SIZE)
+  {
+    ERROR_LOG_FMT(AUDIO, "WaveFileWriter - buffer too small (count = {}).", count);
+    return;
+  }
+
+  if (skip_silence)
+  {
+    bool all_zero = true;
+
+    for (u32 i = 0; i < count * 2; i++)
+    {
+      if (sample_data[i])
+        all_zero = false;
+    }
+
+    if (all_zero)
+      return;
+  }
+
+  for (u32 i = 0; i < count; i++)
+  {
+    const int sample_l = sample_data[2 * i];
+    const int sample_r = sample_data[2 * i + 1];
+
+    conv_buffer[2 * i] = sample_l * l_volume / 256;
+    conv_buffer[2 * i + 1] = sample_r * r_volume / 256;
+  }
+
+  if (sample_rate_divisor != current_sample_rate_divisor)
+  {
+    Stop();
+    file_index++;
+    const std::string filename =
+        fmt::format("{}{}{}.wav", File::GetUserPath(D_DUMPAUDIO_IDX), basename, file_index);
+    Start(filename, sample_rate_divisor);
+    current_sample_rate_divisor = sample_rate_divisor;
+  }
+
+  file.WriteBytes(conv_buffer.data(), count * 4);
+  audio_size += count * 4;
+}

@@ -20,10 +20,13 @@
 #include "Common/Config/Config.h"
 #include "Common/Crypto/SHA1.h"
 #include "Common/FileUtil.h"
+#include "Common/Image.h"
 #include "Common/IOFile.h"
 #include "Common/MinizipUtil.h"
+#include "Common/MsgHandler.h"
 #include "Common/ScopeGuard.h"
 #include "Common/Thread.h"
+#include "Core/Config/GraphicsSettings.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/ConfigManager.h"
 #include "Core/Core.h"
@@ -423,6 +426,7 @@ void Core::AddCallbacks()
     auto core = static_cast<Core*>(context);
     if (auto host = core->m_host.lock())
       host->FrameEnded(core->m_video_buffer);
+    core->MaybeDumpFrame();
   };
   m_core->addCoreCallbacks(m_core, &callbacks);
 }
@@ -702,6 +706,69 @@ void Core::DoState(PointerWrap& p)
     if (auto host = m_host.lock())
       host->FrameEnded(m_video_buffer);
   }
+}
+
+std::string Core::GetFrameDumpFileName(u32 index) const
+{
+  const std::string dump_dir = File::GetUserPath(D_DUMPFRAMES_IDX) + "GBA" DIR_SEP;
+  File::CreateFullPath(dump_dir);
+  return fmt::format("{}gba{}_framedump_{:08}.png", dump_dir, m_device_number + 1, index);
+}
+
+void Core::MaybeDumpFrame()
+{
+  if (!Config::Get(Config::MAIN_GBA_DUMP_FRAMES))
+  {
+    std::lock_guard<std::mutex> lock(m_frame_dump_mutex);
+    m_frame_dump_started = false;
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(m_frame_dump_mutex);
+  if (!m_frame_dump_started)
+  {
+    m_frame_dump_counter = 1;
+    m_frame_dump_started = true;
+
+    if (!Config::Get(Config::MAIN_MOVIE_DUMP_FRAMES_SILENT))
+    {
+      const std::string filename = GetFrameDumpFileName(m_frame_dump_counter);
+      if (File::Exists(filename))
+      {
+        if (!AskYesNoFmtT("Frame dump image '{0}' already exists. Overwrite?", filename))
+        {
+          Config::SetCurrent(Config::MAIN_GBA_DUMP_FRAMES, false);
+          m_frame_dump_started = false;
+          return;
+        }
+      }
+    }
+  }
+
+  u32 width = 0;
+  u32 height = 0;
+  m_core->currentVideoSize(m_core, &width, &height);
+  if (width == 0 || height == 0 || m_video_buffer.size() != width * height)
+    return;
+
+  std::vector<u8> rgb;
+  rgb.resize(width * height * 3);
+  for (size_t i = 0; i < m_video_buffer.size(); ++i)
+  {
+    const u32 pixel = m_video_buffer[i];
+    const u8 r = static_cast<u8>(pixel & 0xFF);
+    const u8 g = static_cast<u8>((pixel >> 8) & 0xFF);
+    const u8 b = static_cast<u8>((pixel >> 16) & 0xFF);
+    const size_t out = i * 3;
+    rgb[out] = r;
+    rgb[out + 1] = g;
+    rgb[out + 2] = b;
+  }
+
+  const std::string filename = GetFrameDumpFileName(m_frame_dump_counter);
+  Common::SavePNG(filename, rgb.data(), Common::ImageByteFormat::RGB, width, height, width * 3,
+                  Config::Get(Config::GFX_PNG_COMPRESSION_LEVEL));
+  m_frame_dump_counter++;
 }
 
 bool Core::GetRomInfo(const char* rom_path, std::array<u8, 20>& hash, std::string& title)
